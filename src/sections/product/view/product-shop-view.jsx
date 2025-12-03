@@ -232,7 +232,7 @@ export function ProductShopView({ products, loading }) {
     filters.state.priceRange[0] !== 0 ||
     filters.state.priceRange[1] !== maxPrice;
 
-  const notFound = !dataFiltered.length && canReset;
+  const notFound = !loading && !dataFiltered.length && canReset;
 
   const handleSortBy = useCallback((newValue) => {
     setSortBy(newValue);
@@ -303,9 +303,11 @@ export function ProductShopView({ products, loading }) {
         {canReset && renderResults}
       </Stack>
 
-      {(notFound || productsEmpty) && renderNotFound}
+      {/* Show "No data" only when NOT loading and no products found */}
+      {!loading && (notFound || productsEmpty) && renderNotFound}
 
-      <ProductList products={dataFiltered} loading={loading} />
+      {/* Show ProductList: when loading (to show skeleton) OR when not loading and has products */}
+      {(loading || !(notFound || productsEmpty)) && <ProductList products={dataFiltered} loading={loading} />}
     </DashboardContent>
   );
 }

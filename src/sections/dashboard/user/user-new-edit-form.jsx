@@ -21,7 +21,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import { createUser, updateUser } from 'src/store/slices/userSlice';
 import { useAuthContext } from 'src/auth/hooks';
-import { NewUserSchema } from './user-validation-schema';
+import { NewUserSchema } from 'src/validations/user-validation-schema';
 
 // Helper to update user in sessionStorage
 const updateUserInStorage = (updatedUser) => {
@@ -69,7 +69,13 @@ export function UserNewEditForm({ currentUser }) {
   );
 
   const methods = useForm({
-    mode: 'onChange',
+    // mode: 'onChange',
+    // shouldFocusError: true,
+    // resolver: zodResolver(NewUserSchema),
+    // defaultValues,
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
     resolver: zodResolver(NewUserSchema),
     defaultValues,
   });
@@ -86,8 +92,10 @@ export function UserNewEditForm({ currentUser }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // Convert status to lowercase (backend expects "active", "banned", etc.)
-      const status = (data.status || 'Active').toLowerCase();
+      // Ensure status is capitalized (backend expects "Active", "Inactive", "Banned", etc.)
+      const status = data.status
+        ? data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase()
+        : 'Active';
 
       // Transform frontend data to backend format
       const backendData = {
@@ -161,6 +169,7 @@ export function UserNewEditForm({ currentUser }) {
                   (values.status === 'Active' && 'success') ||
                   (values.status === 'Banned' && 'error') ||
                   (values.status === 'Inactive' && 'error') ||
+                  (values.status === 'Pending' && 'warning') ||
                   'warning'
                 }
                 sx={{ position: 'absolute', top: 24, right: 24 }}
@@ -170,40 +179,147 @@ export function UserNewEditForm({ currentUser }) {
             )}
 
             {currentUser && (
-              <FormControlLabel
-                labelPlacement="start"
-                control={
-                  <Controller
-                    name="status"
-                    control={control}
-                    render={({ field }) => (
-                      <Switch
-                        {...field}
-                        checked={field.value !== 'Active'}
-                        onChange={(event) =>
-                          field.onChange(event.target.checked ? 'Banned' : 'Active')
-                        }
-                      />
-                    )}
-                  />
-                }
-                label={
-                  <>
-                    <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
-                      Banned
-                    </Typography>
-                    <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                      Apply disable account
-                    </Typography>
-                  </>
-                }
-                sx={{
-                  mx: 0,
-                  mb: 3,
-                  width: 1,
-                  justifyContent: 'space-between',
-                }}
-              />
+              <Stack spacing={3}>
+                <FormControlLabel
+                  labelPlacement="start"
+                  control={
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value === 'Active'}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              field.onChange('Active');
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  }
+                  label={
+                    <>
+                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                        Active
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        User account is active
+                      </Typography>
+                    </>
+                  }
+                  sx={{
+                    mx: 0,
+                    width: 1,
+                    justifyContent: 'space-between',
+                  }}
+                />
+
+                <FormControlLabel
+                  labelPlacement="start"
+                  control={
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value === 'Inactive'}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              field.onChange('Inactive');
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  }
+                  label={
+                    <>
+                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                        Inactive
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        User account is inactive
+                      </Typography>
+                    </>
+                  }
+                  sx={{
+                    mx: 0,
+                    width: 1,
+                    justifyContent: 'space-between',
+                  }}
+                />
+
+                <FormControlLabel
+                  labelPlacement="start"
+                  control={
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value === 'Pending'}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              field.onChange('Pending');
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  }
+                  label={
+                    <>
+                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                        Pending
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        User account is pending verification
+                      </Typography>
+                    </>
+                  }
+                  sx={{
+                    mx: 0,
+                    width: 1,
+                    justifyContent: 'space-between',
+                  }}
+                />
+
+                <FormControlLabel
+                  labelPlacement="start"
+                  control={
+                    <Controller
+                      name="status"
+                      control={control}
+                      render={({ field }) => (
+                        <Switch
+                          checked={field.value === 'Banned'}
+                          onChange={(event) => {
+                            if (event.target.checked) {
+                              field.onChange('Banned');
+                            }
+                          }}
+                        />
+                      )}
+                    />
+                  }
+                  label={
+                    <>
+                      <Typography variant="subtitle2" sx={{ mb: 0.5 }}>
+                        Banned
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                        Apply disable account
+                      </Typography>
+                    </>
+                  }
+                  sx={{
+                    mx: 0,
+                    width: 1,
+                    justifyContent: 'space-between',
+                  }}
+                />
+              </Stack>
             )}
           </Card>
         </Grid>

@@ -1,4 +1,3 @@
-import { z as zod } from 'zod';
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
@@ -21,22 +20,7 @@ import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import { createUser, updateUser } from 'src/store/slices/userSlice';
-
-// ----------------------------------------------------------------------
-
-export const NewUserSchema = zod.object({
-  username: zod.string().min(1, { message: 'Username is required!' }),
-  firstname: zod.string().min(1, { message: 'First name is required!' }),
-  lastname: zod.string().min(1, { message: 'Last name is required!' }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  // role: zod.string().min(1, { message: 'Role is required!' }),
-  // password: zod.string().optional(),
-  // Not required
-  status: zod.string(),
-});
+import { NewUserSchema } from 'src/validations/user-validation-schema';
 
 // ----------------------------------------------------------------------
 
@@ -58,7 +42,9 @@ export function UserNewEditForm({ currentUser }) {
   );
 
   const methods = useForm({
-    mode: 'onSubmit',
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
     resolver: zodResolver(NewUserSchema),
     defaultValues,
   });
@@ -68,6 +54,7 @@ export function UserNewEditForm({ currentUser }) {
     watch,
     control,
     handleSubmit,
+    trigger,
     formState: { isSubmitting },
   } = methods;
 
@@ -102,6 +89,10 @@ export function UserNewEditForm({ currentUser }) {
       toast.error(error || 'Failed to save user');
       console.error('Error saving user:', error);
     }
+  }, async (errors) => {
+    // This callback is called when validation fails
+    // Trigger validation for all fields to show errors
+    await trigger();
   });
 
   return (

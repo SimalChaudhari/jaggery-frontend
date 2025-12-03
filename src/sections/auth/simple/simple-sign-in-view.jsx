@@ -150,7 +150,8 @@ export function SimpleSignInView() {
           component={RouterLink}
           href={paths.auth.simple.forgotPassword}
           variant="body2"
-          color="inherit"
+          // color="inherit"
+          color="primary"
           sx={{ alignSelf: 'flex-end' }}
         >
           Forgot password?
@@ -176,7 +177,8 @@ export function SimpleSignInView() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        // color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"

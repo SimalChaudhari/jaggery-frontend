@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -19,7 +20,7 @@ import { fetchCategories } from 'src/store/slices/categorySlice';
 export function HomeCategorySection() {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { categories } = useSelector((state) => state.categories);
+  const { categories, loading } = useSelector((state) => state.categories);
   const isDarkMode = theme.palette.mode === 'dark';
 
   // Fetch categories
@@ -73,82 +74,107 @@ export function HomeCategorySection() {
 
           {/* Categories Grid */}
           <Grid container spacing={{ xs: 3, md: 4 }}>
-            {displayCategories.map((category) => (
-              <Grid key={category.id} xs={6} sm={4} md={2}>
-                <Stack
-                  spacing={2}
-                  component={RouterLink}
-                  href={category.path}
-                  sx={{
-                    textDecoration: 'none',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      '& .category-image': {
-                        transform: 'scale(1.05)',
-                      },
-                    },
-                  }}
-                >
-                  {/* Circular Image Frame */}
-                  <Box
-                    className="category-image"
-                    sx={{
-                      // width: { xs: 120, md: 150 },
-                      // height: { xs: 120, md: 150 },
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      // color: '#8D0505',
-                      color: isDarkMode ? 'text.primary' : '#8D0505',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'transform 0.3s ease',
-                      // border: '2px solid',
-                      borderColor: 'divider',
-                    }}
-                  >
-                    {category.imageUrl ? (
-                      <Image
-                        src={category.imageUrl}
-                        alt={category.title}
+            {loading
+              ? // Skeleton loader
+                [...Array(7)].map((_, index) => (
+                  <Grid key={`skeleton-${index}`} xs={6} sm={4} md={2}>
+                    <Stack spacing={2} alignItems="center">
+                      {/* Circular Image Skeleton */}
+                      <Skeleton
+                        variant="circular"
                         sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
+                          width: { xs: 120, md: 150 },
+                          height: { xs: 120, md: 150 },
                         }}
                       />
-                    ) : (
-                      <Typography
-                        variant="h6"
+                      {/* Label Skeleton */}
+                      <Skeleton
+                        variant="text"
                         sx={{
-                          color: 'common.white',
-                          fontSize: { xs: '0.875rem', md: '1rem' },
+                          width: { xs: 80, md: 100 },
+                          height: 20,
+                        }}
+                      />
+                    </Stack>
+                  </Grid>
+                ))
+              : // Actual categories
+                displayCategories.map((category) => (
+                  <Grid key={category.id} xs={6} sm={4} md={2}>
+                    <Stack
+                      spacing={2}
+                      component={RouterLink}
+                      href={category.path}
+                      sx={{
+                        textDecoration: 'none',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          '& .category-image': {
+                            transform: 'scale(1.05)',
+                          },
+                        },
+                      }}
+                    >
+                      {/* Circular Image Frame */}
+                      <Box
+                        className="category-image"
+                        sx={{
+                          // width: { xs: 120, md: 150 },
+                          // height: { xs: 120, md: 150 },
+                          borderRadius: '50%',
+                          overflow: 'hidden',
+                          // color: '#8D0505',
+                          color: isDarkMode ? 'text.primary' : '#8D0505',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'transform 0.3s ease',
+                          // border: '2px solid',
+                          borderColor: 'divider',
+                        }}
+                      >
+                        {category.imageUrl ? (
+                          <Image
+                            src={category.imageUrl}
+                            alt={category.title}
+                            sx={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        ) : (
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              color: 'common.white',
+                              fontSize: { xs: '0.875rem', md: '1rem' },
+                              textAlign: 'center',
+                              px: 2,
+                            }}
+                          >
+                            {category.title}
+                          </Typography>
+                        )}
+                      </Box>
+
+                      {/* Category Label */}
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          // color: '#8D0505',
+                          color: isDarkMode ? 'text.primary' : '#8D0505',
+                          fontWeight: 600,
                           textAlign: 'center',
-                          px: 2,
+                          fontSize: { xs: '0.875rem', md: '1rem' },
                         }}
                       >
                         {category.title}
                       </Typography>
-                    )}
-                  </Box>
-
-                  {/* Category Label */}
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      // color: '#8D0505',
-                      color: isDarkMode ? 'text.primary' : '#8D0505',
-                      fontWeight: 600,
-                      textAlign: 'center',
-                      fontSize: { xs: '0.875rem', md: '1rem' },
-                    }}
-                  >
-                    {category.title}
-                  </Typography>
-                </Stack>
-              </Grid>
-            ))}
+                    </Stack>
+                  </Grid>
+                ))}
           </Grid>
         </Stack>
       </DashboardContent>

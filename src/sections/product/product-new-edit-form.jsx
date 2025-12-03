@@ -1,4 +1,3 @@
-import { z as zod } from 'zod';
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm, Controller } from 'react-hook-form';
@@ -27,6 +26,7 @@ import { fetchUseCases } from 'src/store/slices/useCaseSlice';
 import { fetchSizes } from 'src/store/slices/sizeSlice';
 import { productService } from 'src/services/product.service';
 import { CONFIG } from 'src/config-global';
+import { ProductSchema, ProductEditSchema } from 'src/validations/product-validation-schema';
 
 // Helper to get full image URL
 const getImageUrl = (imagePath) => {
@@ -53,28 +53,6 @@ const getImageUrl = (imagePath) => {
   // Otherwise return as is (for backward compatibility)
   return imagePath;
 };
-
-// ----------------------------------------------------------------------
-
-export const NewProductSchema = zod.object({
-  title: zod.string().min(1, { message: 'Title is required!' }),
-  description: zod.string().min(1, { message: 'Description is required!' }),
-  benefits: zod.string().optional(),
-  ingredients: zod.string().optional(),
-  storageConditions: zod.string().optional(),
-  actualPrice: zod.number().min(0, { message: 'Actual price must be greater than or equal to 0' }),
-  discountPrice: zod.number().optional(),
-  isSale: zod.boolean().default(false),
-  inStock: zod.boolean().default(true),
-  categories: zod.array(zod.string()).min(1, { message: 'At least one category is required' }),
-  useCases: zod.array(zod.string()).optional(),
-  sizes: zod.array(zod.string()).optional(),
-  sizePrices: zod.array(zod.object({
-    sizeId: zod.string(),
-    actualPrice: zod.number().min(0),
-    discountPrice: zod.number().optional(),
-  })).optional(),
-});
 
 // ----------------------------------------------------------------------
 
@@ -119,9 +97,13 @@ export function ProductNewEditForm({ currentProduct }) {
     [currentProduct]
   );
 
+  const schema = currentProduct ? ProductEditSchema : ProductSchema;
+
   const methods = useForm({
-    mode: 'onSubmit',
-    resolver: zodResolver(NewProductSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
+    resolver: zodResolver(schema),
     defaultValues,
   });
 

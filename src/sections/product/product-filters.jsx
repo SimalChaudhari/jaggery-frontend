@@ -45,14 +45,23 @@ export function ProductFilters({ open, onOpen, onClose, canReset, filters, optio
   );
 
   const handleFilterUseCase = useCallback(
-    (newValue) => {
+    (newValue, allUseCaseOptions) => {
       const currentUseCases = filters.state.useCase || [];
       const isArray = Array.isArray(currentUseCases);
       const useCaseArray = isArray ? currentUseCases : (currentUseCases === 'all' ? [] : [currentUseCases]);
 
+      // Get all use case options excluding 'all'
+      const actualUseCases = allUseCaseOptions.filter((uc) => uc !== 'all');
+
       if (newValue === 'all') {
-        // If "All" is clicked, clear all selections
-        filters.setState({ useCase: [] });
+        // If "All" is clicked
+        if (useCaseArray.length === actualUseCases.length) {
+          // If all are selected, clear all
+          filters.setState({ useCase: [] });
+        } else {
+          // If some/none are selected, select all
+          filters.setState({ useCase: [...actualUseCases] });
+        }
       } else {
         // Toggle the use case
         const index = useCaseArray.indexOf(newValue);
@@ -137,9 +146,35 @@ export function ProductFilters({ open, onOpen, onClose, canReset, filters, optio
         const currentUseCases = filters.state.useCase || [];
         const isArray = Array.isArray(currentUseCases);
         const useCaseArray = isArray ? currentUseCases : (currentUseCases === 'all' ? [] : [currentUseCases]);
-        const isChecked = option === 'all'
-          ? useCaseArray.length === 0
-          : useCaseArray.includes(option);
+        
+        // Get all use case options excluding 'all'
+        const actualUseCases = options.useCases.filter((uc) => uc !== 'all');
+        const totalUseCases = actualUseCases.length;
+        const selectedCount = useCaseArray.length;
+        
+        let isChecked = false;
+        let isIndeterminate = false;
+        
+        if (option === 'all') {
+          // "Select All" logic
+          if (selectedCount === totalUseCases) {
+            // All selected - show checked
+            isChecked = true;
+            isIndeterminate = false;
+          } else if (selectedCount > 0) {
+            // Some selected - show indeterminate
+            isChecked = false;
+            isIndeterminate = true;
+          } else {
+            // None selected - show unchecked
+            isChecked = false;
+            isIndeterminate = false;
+          }
+        } else {
+          // Individual use case
+          isChecked = useCaseArray.includes(option);
+          isIndeterminate = false;
+        }
 
         return (
           <FormControlLabel
@@ -147,7 +182,8 @@ export function ProductFilters({ open, onOpen, onClose, canReset, filters, optio
             control={
               <Checkbox
                 checked={isChecked}
-                onChange={() => handleFilterUseCase(option)}
+                indeterminate={isIndeterminate}
+                onChange={() => handleFilterUseCase(option, options.useCases)}
               />
             }
             label={option}

@@ -281,6 +281,7 @@ const Simple = {
   ForgotPasswordPage: lazy(() => import('src/pages/auth/simple/forgot-password')),
   ResetPasswordPage: lazy(() => import('src/pages/auth/simple/reset-password')),
   VerifyPage: lazy(() => import('src/pages/auth/simple/verify')),
+  VerificationSentPage: lazy(() => import('src/pages/auth/simple/verification-sent')),
 };
 
 const authSimple = {
@@ -328,6 +329,14 @@ const authSimple = {
       element: (
         <GuestGuard>
           <Simple.VerifyPage />
+        </GuestGuard>
+      ),
+    },
+    {
+      path: 'verification-sent',
+      element: (
+        <GuestGuard>
+          <Simple.VerificationSentPage />
         </GuestGuard>
       ),
     },

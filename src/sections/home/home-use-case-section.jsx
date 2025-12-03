@@ -4,6 +4,7 @@ import { useTheme } from '@mui/material/styles';
 
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
+import Skeleton from '@mui/material/Skeleton';
 import Typography from '@mui/material/Typography';
 import Grid from '@mui/material/Unstable_Grid2';
 
@@ -19,7 +20,7 @@ import { fetchUseCases } from 'src/store/slices/useCaseSlice';
 export function HomeUseCaseSection() {
   const theme = useTheme();
   const dispatch = useDispatch();
-  const { useCases } = useSelector((state) => state.useCases);
+  const { useCases, loading } = useSelector((state) => state.useCases);
   const isDarkMode = theme.palette.mode === 'dark';
 
   // Fetch use cases
@@ -63,77 +64,102 @@ export function HomeUseCaseSection() {
 
           {/* Use Cases Grid */}
           <Grid container spacing={{ xs: 3, md: 4 }}>
-            {displayUseCases.map((useCase) => (
-              <Grid key={useCase.id} xs={6} sm={4} md={2}>
-                <Stack
-                  spacing={2}
-                  component={RouterLink}
-                  href={useCase.path}
-                  sx={{
-                    textDecoration: 'none',
-                    alignItems: 'center',
-                    cursor: 'pointer',
-                    '&:hover': {
-                      '& .use-case-image': {
-                        transform: 'scale(1.05)',
-                      },
-                    },
-                  }}
-                >
-                  {/* Circular Image Frame */}
-                  <Box
-                    className="use-case-image"
-                    sx={{
-                      borderRadius: '50%',
-                      overflow: 'hidden',
-                      color: isDarkMode ? 'text.primary' : '#8D0505',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      transition: 'transform 0.3s ease',
-                      borderColor: 'divider',
-                    }}
-                  >
-                    {useCase.imageUrl ? (
-                      <Image
-                        src={useCase.imageUrl}
-                        alt={useCase.title}
+            {loading
+              ? // Skeleton loader
+                [...Array(7)].map((_, index) => (
+                  <Grid key={`skeleton-${index}`} xs={6} sm={4} md={2}>
+                    <Stack spacing={2} alignItems="center">
+                      {/* Circular Image Skeleton */}
+                      <Skeleton
+                        variant="circular"
                         sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
+                          width: { xs: 120, md: 150 },
+                          height: { xs: 120, md: 150 },
                         }}
                       />
-                    ) : (
-                      <Typography
-                        variant="h6"
+                      {/* Label Skeleton */}
+                      <Skeleton
+                        variant="text"
                         sx={{
-                          color: 'common.white',
-                          fontSize: { xs: '0.875rem', md: '1rem' },
+                          width: { xs: 80, md: 100 },
+                          height: 20,
+                        }}
+                      />
+                    </Stack>
+                  </Grid>
+                ))
+              : // Actual use cases
+                displayUseCases.map((useCase) => (
+                  <Grid key={useCase.id} xs={6} sm={4} md={2}>
+                    <Stack
+                      spacing={2}
+                      component={RouterLink}
+                      href={useCase.path}
+                      sx={{
+                        textDecoration: 'none',
+                        alignItems: 'center',
+                        cursor: 'pointer',
+                        '&:hover': {
+                          '& .use-case-image': {
+                            transform: 'scale(1.05)',
+                          },
+                        },
+                      }}
+                    >
+                      {/* Circular Image Frame */}
+                      <Box
+                        className="use-case-image"
+                        sx={{
+                          borderRadius: '50%',
+                          overflow: 'hidden',
+                          color: isDarkMode ? 'text.primary' : '#8D0505',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          transition: 'transform 0.3s ease',
+                          borderColor: 'divider',
+                        }}
+                      >
+                        {useCase.imageUrl ? (
+                          <Image
+                            src={useCase.imageUrl}
+                            alt={useCase.title}
+                            sx={{
+                              width: '100%',
+                              height: '100%',
+                              objectFit: 'cover',
+                            }}
+                          />
+                        ) : (
+                          <Typography
+                            variant="h6"
+                            sx={{
+                              color: 'common.white',
+                              fontSize: { xs: '0.875rem', md: '1rem' },
+                              textAlign: 'center',
+                              px: 2,
+                            }}
+                          >
+                            {useCase.title}
+                          </Typography>
+                        )}
+                      </Box>
+
+                      {/* Use Case Label */}
+                      <Typography
+                        variant="body1"
+                        sx={{
+                          color: isDarkMode ? 'text.primary' : '#8D0505',
+                          fontWeight: 600,
                           textAlign: 'center',
-                          px: 2,
+                          fontSize: { xs: '0.875rem', md: '1rem' },
                         }}
                       >
                         {useCase.title}
                       </Typography>
-                    )}
-                  </Box>
-
-                  {/* Use Case Label */}
-                  <Typography
-                    variant="body1"
-                    sx={{
-                      color: isDarkMode ? 'text.primary' : '#8D0505',
-                      fontWeight: 600,
-                      textAlign: 'center',
-                      fontSize: { xs: '0.875rem', md: '1rem' },
-                    }}
-                  >
-                    {useCase.title}
-                  </Typography>
-                </Stack>
-              </Grid>
-            ))}
+                    </Stack>
+                  </Grid>
+                ))}
           </Grid>
         </Stack>
       </DashboardContent>

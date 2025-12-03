@@ -54,20 +54,21 @@ const StyledNavItem = styled(ButtonBase, {
         duration: theme.transitions.duration.shorter,
       }),
     },
-    dot: {
-      width: 6,
-      height: 6,
-      left: -12,
-      opacity: 0.64,
-      content: '""',
-      borderRadius: '50%',
-      position: 'absolute',
-      backgroundColor: theme.vars.palette.text.disabled,
-      ...(active && {
-        opacity: 1,
-        backgroundColor: theme.vars.palette.primary.main,
-      }),
-    },
+    // Old dot styling (commented out - replaced with underline)
+    // dot: {
+    //   width: 6,
+    //   height: 6,
+    //   left: -12,
+    //   opacity: 0.64,
+    //   content: '""',
+    //   borderRadius: '50%',
+    //   position: 'absolute',
+    //   backgroundColor: theme.vars.palette.text.disabled,
+    //   ...(active && {
+    //     opacity: 1,
+    //     backgroundColor: theme.vars.palette.primary.main,
+    //   }),
+    // },
   };
 
   return {
@@ -77,13 +78,54 @@ const StyledNavItem = styled(ButtonBase, {
     ...(rootItem && {
       ...baseStyles.item,
       height: '100%',
-      '&:hover': { opacity: 0.64, '&::before': baseStyles.dot },
+      position: 'relative',
+      // Old hover with dot (commented out)
+      // '&:hover': { opacity: 0.64, '&::before': baseStyles.dot },
+      '&:hover': {
+        opacity: 0.64,
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          backgroundColor: theme.vars.palette.text.disabled,
+        },
+      },
+      // Old active with dot (commented out)
+      // ...(active && {
+      //   color: theme.vars.palette.primary.main,
+      //   fontWeight: theme.typography.fontWeightSemiBold,
+      //   '&::before': baseStyles.dot,
+      // }),
       ...(active && {
         color: theme.vars.palette.primary.main,
         fontWeight: theme.typography.fontWeightSemiBold,
-        '&::before': baseStyles.dot,
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          backgroundColor: theme.vars.palette.primary.main,
+        },
       }),
-      ...(open && { opacity: 0.64, '&::before': baseStyles.dot }),
+      // Old open with dot (commented out)
+      // ...(open && { opacity: 0.64, '&::before': baseStyles.dot }),
+      ...(open && {
+        opacity: 0.64,
+        '&::after': {
+          content: '""',
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          height: 2,
+          backgroundColor: theme.vars.palette.text.disabled,
+        },
+      }),
     }),
 
     /**
@@ -94,14 +136,24 @@ const StyledNavItem = styled(ButtonBase, {
       justifyContent: 'flex-start',
       color: theme.vars.palette.text.secondary,
       fontSize: theme.typography.pxToRem(13),
+      position: 'relative',
+      // Old hover with dot (commented out)
+      // '&:hover': {
+      //   color: theme.vars.palette.text.primary,
+      //   '&::before': baseStyles.dot,
+      // },
       '&:hover': {
         color: theme.vars.palette.text.primary,
-        '&::before': baseStyles.dot,
       },
+      // Old active with dot (commented out)
+      // ...(active && {
+      //   color: theme.vars.palette.text.primary,
+      //   fontWeight: theme.typography.fontWeightSemiBold,
+      //   '&::before': baseStyles.dot,
+      // }),
       ...(active && {
         color: theme.vars.palette.text.primary,
         fontWeight: theme.typography.fontWeightSemiBold,
-        '&::before': baseStyles.dot,
       }),
     }),
   };

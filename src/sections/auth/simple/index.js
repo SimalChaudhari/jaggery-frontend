@@ -7,4 +7,5 @@ export * from './simple-forgot-password-view';
 export * from './simple-reset-password-view';
 
 export * from './simple-verify-view';
+export * from './simple-verification-sent-view';
 

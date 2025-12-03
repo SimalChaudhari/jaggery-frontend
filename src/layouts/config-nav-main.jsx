@@ -15,6 +15,11 @@ export const navData = [
     children: [],
   },
   {
+    title: 'Collections',
+    path: paths.collections,
+    icon: <Iconify width={22} icon="solar:widget-5-bold-duotone" />,
+  },
+  {
     title: 'Contact',
     path: paths.contact,
     icon: <Iconify width={22} icon="solar:phone-calling-bold-duotone" />,

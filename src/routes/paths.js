@@ -27,6 +27,7 @@ export const paths = {
   rewards: '/rewards',
   faqs: '/faqs',
   home: '/home',
+  collections: '/collections',
   profile: '/profile',
   profileEdit: '/profile/edit',
   page403: '/error/403',
@@ -85,6 +86,7 @@ export const paths = {
       forgotPassword: `${ROOTS.AUTH}/forgot-password`,
       resetPassword: `${ROOTS.AUTH}/reset-password`,
       verify: `${ROOTS.AUTH}/verify`,
+      verificationSent: `${ROOTS.AUTH}/verification-sent`,
     },
   },
   authDemo: {

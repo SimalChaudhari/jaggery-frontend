@@ -11,6 +11,7 @@ import { PublicGuard, AuthGuard } from 'src/auth/guard';
 // ----------------------------------------------------------------------
 
 const HomePage = lazy(() => import('src/pages/home'));
+const CollectionsPage = lazy(() => import('src/pages/collections'));
 const FaqsPage = lazy(() => import('src/pages/faqs'));
 const AboutPage = lazy(() => import('src/pages/about-us'));
 const ContactPage = lazy(() => import('src/pages/contact-us'));
@@ -57,6 +58,10 @@ export const mainRoutes = [
           {
             path: 'home',
             element: <HomePage />,
+          },
+          {
+            path: 'collections',
+            element: <CollectionsPage />,
           },
           {
             path: 'about-us',

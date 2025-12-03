@@ -19,7 +19,7 @@ import { toast } from 'src/components/snackbar';
 import { Form, Field } from 'src/components/hook-form';
 import { updateUser } from 'src/store/slices/userSlice';
 import { useAuthContext } from 'src/auth/hooks';
-import { UserQuickEditSchema } from './user-validation-schema';
+import { UserQuickEditSchema } from 'src/validations/user-validation-schema';
 
 // Helper to update user in sessionStorage
 const updateUserInStorage = (updatedUser) => {
@@ -76,8 +76,10 @@ export function UserQuickEditForm({ currentUser, open, onClose }) {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      // Convert status to lowercase (backend expects "active", "banned", etc.)
-      const status = (data.status || 'Active').toLowerCase();
+      // Ensure status is capitalized (backend expects "Active", "Inactive", "Banned", etc.)
+      const status = data.status
+        ? data.status.charAt(0).toUpperCase() + data.status.slice(1).toLowerCase()
+        : 'Active';
 
       // Transform frontend data to backend format
       const backendData = {

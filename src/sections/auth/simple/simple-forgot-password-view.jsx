@@ -65,7 +65,7 @@ export function SimpleForgotPasswordView() {
       <PasswordIcon sx={{ mx: 'auto' }} />
 
       <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
-        <Typography variant="h5">Forgot your password?</Typography>
+        <Typography variant="h5" color="primary">Forgot your password?</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           {`Please enter the email address associated with your account and we'll email you a link to reset your password.`}
@@ -91,6 +91,7 @@ export function SimpleForgotPasswordView() {
         variant="contained"
         loading={isSubmitting}
         loadingIndicator="Send request..."
+        color="primary"
       >
         Send request
       </LoadingButton>
@@ -98,7 +99,8 @@ export function SimpleForgotPasswordView() {
       <Link
         component={RouterLink}
         href={paths.auth.simple.signIn}
-        color="inherit"
+        // color="inherit"
+        color="primary"
         variant="subtitle2"
         sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}
       >

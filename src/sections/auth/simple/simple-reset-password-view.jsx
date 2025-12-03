@@ -50,7 +50,8 @@ export function SimpleResetPasswordView() {
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  const password = useBoolean();
+  const showPassword = useBoolean();
+  const showConfirmPassword = useBoolean();
 
   const defaultValues = {
     password: '',
@@ -100,7 +101,7 @@ export function SimpleResetPasswordView() {
       <NewPasswordIcon sx={{ mx: 'auto' }} />
 
       <Stack spacing={1} sx={{ mt: 3, mb: 5, textAlign: 'center', whiteSpace: 'pre-line' }}>
-        <Typography variant="h5">Reset your password</Typography>
+        <Typography variant="h5" color="primary">Reset your password</Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
           Please enter your new password below.
@@ -115,13 +116,13 @@ export function SimpleResetPasswordView() {
         name="password"
         label="New password"
         placeholder="6+ characters"
-        type={password.value ? 'text' : 'password'}
+        type={showPassword.value ? 'text' : 'password'}
         InputLabelProps={{ shrink: true }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              <IconButton onClick={showPassword.onToggle} edge="end">
+                <Iconify icon={showPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
               </IconButton>
             </InputAdornment>
           ),
@@ -131,13 +132,13 @@ export function SimpleResetPasswordView() {
       <Field.Text
         name="confirmPassword"
         label="Confirm new password"
-        type={password.value ? 'text' : 'password'}
+        type={showConfirmPassword.value ? 'text' : 'password'}
         InputLabelProps={{ shrink: true }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
-              <IconButton onClick={password.onToggle} edge="end">
-                <Iconify icon={password.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
+              <IconButton onClick={showConfirmPassword.onToggle} edge="end">
+                <Iconify icon={showConfirmPassword.value ? 'solar:eye-bold' : 'solar:eye-closed-bold'} />
               </IconButton>
             </InputAdornment>
           ),
@@ -152,6 +153,7 @@ export function SimpleResetPasswordView() {
         loading={isSubmitting}
         loadingIndicator="Resetting password..."
         disabled={!token}
+        color="primary"
       >
         Reset password
       </LoadingButton>
@@ -159,7 +161,8 @@ export function SimpleResetPasswordView() {
       <Link
         component={RouterLink}
         href={paths.auth.simple.signIn}
-        color="inherit"
+        // color="inherit"
+        color="primary"
         variant="subtitle2"
         sx={{ mx: 'auto', alignItems: 'center', display: 'inline-flex' }}
       >

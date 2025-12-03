@@ -1,4 +1,3 @@
-import { z as zod } from 'zod';
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -23,26 +22,7 @@ import { Iconify } from 'src/components/iconify';
 
 import { signUp } from 'src/auth/context/jwt';
 import { useAuthContext } from 'src/auth/hooks';
-
-// ----------------------------------------------------------------------
-
-export const SignUpSchema = zod.object({
-  username: zod
-    .string()
-    .min(1, { message: 'Username is required!' })
-    .min(3, { message: 'Username must be at least 3 characters!' })
-    .regex(/^[a-zA-Z0-9_]+$/, { message: 'Username can only contain letters, numbers, and underscores!' }),
-  firstName: zod.string().min(1, { message: 'First name is required!' }),
-  lastName: zod.string().min(1, { message: 'Last name is required!' }),
-  email: zod
-    .string()
-    .min(1, { message: 'Email is required!' })
-    .email({ message: 'Email must be a valid email address!' }),
-  password: zod
-    .string()
-    .min(1, { message: 'Password is required!' })
-    .min(6, { message: 'Password must be at least 6 characters!' }),
-});
+import { SignUpSchema } from 'src/validations/user-validation-schema';
 
 // ----------------------------------------------------------------------
 
@@ -57,10 +37,12 @@ export function SimpleSignUpView() {
     firstName: '',
     lastName: '',
     email: '',
+    mobile: '',
     password: '',
   };
 
   const methods = useForm({
+    mode: 'onChange',
     resolver: zodResolver(SignUpSchema),
     defaultValues,
   });
@@ -75,14 +57,15 @@ export function SimpleSignUpView() {
       await signUp({
         username: data.username,
         email: data.email,
+        mobile: data.mobile,
         password: data.password,
         firstName: data.firstName,
         lastName: data.lastName,
       });
 
-      // Redirect to verify page after successful registration
+      // Redirect to verification sent page after successful registration
       const searchParams = new URLSearchParams({ email: data.email }).toString();
-      const href = `${paths.auth.simple.verify}?${searchParams}`;
+      const href = `${paths.auth.simple.verificationSent}?${searchParams}`;
       router.push(href);
     } catch (error) {
       console.error(error);
@@ -94,7 +77,7 @@ export function SimpleSignUpView() {
 
   const renderHead = (
     <Stack alignItems="center" spacing={1.5} sx={{ mb: 5 }}>
-      <Typography variant="h5">Get started absolutely free</Typography>
+      <Typography variant="h5" color="primary">Get started absolutely free</Typography>
 
       <Stack direction="row" spacing={0.5}>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
@@ -114,22 +97,29 @@ export function SimpleSignUpView() {
         name="username"
         label="Username"
         placeholder="Choose a username"
-        InputLabelProps={{ shrink: true }}
+        autoComplete="off"
       />
 
       <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-        <Field.Text name="firstName" label="First name" InputLabelProps={{ shrink: true }} />
-        <Field.Text name="lastName" label="Last name" InputLabelProps={{ shrink: true }} />
+        <Field.Text name="firstName" label="First name" autoComplete="off" />
+        <Field.Text name="lastName" label="Last name" autoComplete="off" />
       </Stack>
 
-      <Field.Text name="email" label="Email address" InputLabelProps={{ shrink: true }} />
+      <Field.Text name="email" label="Email address" type="email" autoComplete="off" />
+
+      <Field.Text
+        name="mobile"
+        label="Mobile number"
+        placeholder="10-15 digits"
+        autoComplete="off"
+      />
 
       <Field.Text
         name="password"
         label="Password"
         placeholder="6+ characters"
         type={password.value ? 'text' : 'password'}
-        InputLabelProps={{ shrink: true }}
+        autoComplete="new-password"
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -143,7 +133,8 @@ export function SimpleSignUpView() {
 
       <LoadingButton
         fullWidth
-        color="inherit"
+        // color="inherit"
+        color="primary"
         size="large"
         type="submit"
         variant="contained"
@@ -166,11 +157,17 @@ export function SimpleSignUpView() {
       }}
     >
       {'By signing up, I agree to '}
-      <Link underline="always" color="text.primary">
+      <Link underline="always"
+      // color="text.primary"
+      color="primary"
+      >
         Terms of service
       </Link>
       {' and '}
-      <Link underline="always" color="text.primary">
+      <Link underline="always"
+      // color="text.primary"
+      color="primary"
+      >
         Privacy policy
       </Link>
       .
@@ -189,7 +186,7 @@ export function SimpleSignUpView() {
         </Alert>
       )}
 
-      <Form methods={methods} onSubmit={onSubmit}>
+      <Form methods={methods} onSubmit={onSubmit} autoComplete="off">
         {renderForm}
       </Form>
 

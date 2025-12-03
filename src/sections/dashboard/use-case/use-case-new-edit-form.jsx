@@ -1,4 +1,3 @@
-import { z as zod } from 'zod';
 import { useMemo } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -16,15 +15,7 @@ import { useRouter } from 'src/routes/hooks';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, RHFUpload } from 'src/components/hook-form';
 import { createUseCase, updateUseCase } from 'src/store/slices/useCaseSlice';
-
-// ----------------------------------------------------------------------
-
-export const NewUseCaseSchema = zod.object({
-  title: zod.string().min(1, { message: 'Title is required!' }),
-  image: zod.any().refine((val) => val !== null && val !== undefined, {
-    message: 'Image is required!',
-  }),
-});
+import { UseCaseSchema, UseCaseEditSchema } from 'src/validations/use-case-validation-schema';
 
 // ----------------------------------------------------------------------
 
@@ -40,22 +31,13 @@ export function UseCaseNewEditForm({ currentUseCase }) {
     [currentUseCase]
   );
 
-  // Dynamic schema - image required only for new use cases
-  const schema = useMemo(
-    () =>
-      zod.object({
-        title: zod.string().min(1, { message: 'Title is required!' }),
-        image: currentUseCase
-          ? zod.any().optional() // Optional for edit
-          : zod.any().refine((val) => val !== null && val !== undefined, {
-            message: 'Image is required!',
-          }), // Required for create
-      }),
-    [currentUseCase]
-  );
+  // Use appropriate schema based on create/edit
+  const schema = currentUseCase ? UseCaseEditSchema : UseCaseSchema;
 
   const methods = useForm({
-    mode: 'onSubmit',
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
     resolver: zodResolver(schema),
     defaultValues,
   });

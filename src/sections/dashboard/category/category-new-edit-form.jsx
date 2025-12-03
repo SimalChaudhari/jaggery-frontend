@@ -1,4 +1,3 @@
-import { z as zod } from 'zod';
 import { useMemo, useEffect } from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
@@ -17,15 +16,7 @@ import { useRouter } from 'src/routes/hooks';
 import { toast } from 'src/components/snackbar';
 import { Form, Field, RHFUpload } from 'src/components/hook-form';
 import { createCategory, updateCategory, fetchCategories } from 'src/store/slices/categorySlice';
-
-// ----------------------------------------------------------------------
-
-export const NewCategorySchema = zod.object({
-  title: zod.string().min(1, { message: 'Title is required!' }),
-  image: zod.any().refine((val) => val !== null && val !== undefined, {
-    message: 'Image is required!',
-  }),
-});
+import { CategorySchema, CategoryEditSchema } from 'src/validations/category-validation-schema';
 
 // ----------------------------------------------------------------------
 
@@ -61,24 +52,13 @@ export function CategoryNewEditForm({ currentCategory }) {
     [currentCategory]
   );
 
-  // Dynamic schema - image required only for new categories
-  const schema = useMemo(
-    () =>
-      zod.object({
-        title: zod.string().min(1, { message: 'Title is required!' }),
-        description: zod.string().min(1, { message: 'Description is required!' }),
-        parentCategory: zod.string().optional(),
-        image: currentCategory
-          ? zod.any().optional() // Optional for edit
-          : zod.any().refine((val) => val !== null && val !== undefined, {
-              message: 'Image is required!',
-            }), // Required for create
-      }),
-    [currentCategory]
-  );
+  // Use appropriate schema based on create/edit
+  const schema = currentCategory ? CategoryEditSchema : CategorySchema;
 
   const methods = useForm({
-    mode: 'onSubmit',
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
     resolver: zodResolver(schema),
     defaultValues,
   });

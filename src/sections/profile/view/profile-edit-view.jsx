@@ -20,7 +20,7 @@ import { MainContent } from 'src/layouts/main/main';
 
 import { useAuthContext } from 'src/auth/hooks';
 import { authService } from 'src/services/auth.service';
-import { ProfileSchema } from 'src/sections/dashboard/user/user-validation-schema';
+import { ProfileSchema } from 'src/validations/user-validation-schema';
 
 // Helper to update user in sessionStorage
 const updateUserInStorage = (updatedUser) => {
@@ -69,7 +69,10 @@ export function ProfileEditView() {
   );
 
   const methods = useForm({
+    // mode: 'onTouched',
+    // reValidateMode: 'onBlur',
     mode: 'onChange',
+    shouldFocusError: true,
     resolver: zodResolver(ProfileSchema),
     defaultValues,
   });
@@ -77,6 +80,7 @@ export function ProfileEditView() {
   const {
     reset,
     handleSubmit,
+    trigger,
     formState: { isSubmitting },
   } = methods;
 
@@ -116,6 +120,10 @@ export function ProfileEditView() {
       console.error('Error updating profile:', error);
       toast.error(error?.response?.data?.message || error?.message || 'Failed to update profile');
     }
+  }, async (errors) => {
+    // This callback is called when validation fails
+    // Trigger validation for all fields to show errors
+    await trigger();
   });
 
   return (

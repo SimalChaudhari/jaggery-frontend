@@ -36,13 +36,14 @@ export const signInWithPassword = async ({ email, password }) => {
 /** **************************************
  * Sign up with backend API
  *************************************** */
-export const signUp = async ({ email, password, firstName, lastName, username }) => {
+export const signUp = async ({ email, password, firstName, lastName, username, mobile }) => {
   try {
     const params = {
       username: username || email.split('@')[0], // Use email prefix as username if not provided
       firstname: firstName,
       lastname: lastName,
       email,
+      mobile,
       password,
     };
     const res = await axios.post('/auth/register', params);

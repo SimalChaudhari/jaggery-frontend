@@ -45,8 +45,9 @@ export function ProductShopView({ products, loading }) {
 
   const debouncedQuery = useDebounce(searchQuery);
 
-  // Get category from URL query parameter
+  // Get category and useCase from URL query parameters
   const categoryFromUrl = searchParams.get('category');
+  const useCaseFromUrl = searchParams.get('useCase');
 
   // Fetch categories and use cases
   useEffect(() => {
@@ -104,7 +105,8 @@ export function ProductShopView({ products, loading }) {
 
   // Track if we're updating from URL to prevent loops
   const isUpdatingFromUrl = useRef(false);
-  const isInitialMount = useRef(true);
+  const isInitialMountCategory = useRef(true);
+  const isInitialMountUseCase = useRef(true);
 
   // Update filter when URL category changes (only from external URL changes)
   useEffect(() => {
@@ -115,21 +117,45 @@ export function ProductShopView({ products, loading }) {
 
     if (categoryFromUrl) {
       filters.setState({ category: categoryFromUrl });
-    } else if (!isInitialMount.current && filters.state.category !== 'all') {
+    } else if (!isInitialMountCategory.current && filters.state.category !== 'all') {
       // Only reset if filter is not already 'all' (to avoid unnecessary updates)
       // Skip on initial mount to avoid overriding URL category
       filters.setState({ category: 'all' });
     }
 
-    if (isInitialMount.current) {
-      isInitialMount.current = false;
+    if (isInitialMountCategory.current) {
+      isInitialMountCategory.current = false;
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [categoryFromUrl]);
 
+  // Update filter when URL useCase changes (only from external URL changes)
+  useEffect(() => {
+    if (isUpdatingFromUrl.current) {
+      isUpdatingFromUrl.current = false;
+      return;
+    }
+
+    if (useCaseFromUrl) {
+      // Set useCase as array with single value from URL
+      filters.setState({ useCase: [useCaseFromUrl] });
+    } else if (!isInitialMountUseCase.current) {
+      // Reset useCase if not in URL (but only after initial mount)
+      const currentUseCases = filters.state.useCase || [];
+      if (Array.isArray(currentUseCases) && currentUseCases.length > 0) {
+        filters.setState({ useCase: [] });
+      }
+    }
+
+    if (isInitialMountUseCase.current) {
+      isInitialMountUseCase.current = false;
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [useCaseFromUrl]);
+
   // Update URL when category filter changes (but not when updating from URL)
   useEffect(() => {
-    if (isUpdatingFromUrl.current || isInitialMount.current) {
+    if (isUpdatingFromUrl.current || isInitialMountCategory.current) {
       return;
     }
 
@@ -151,12 +177,44 @@ export function ProductShopView({ products, loading }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [filters.state.category]);
 
+  // Update URL when useCase filter changes (but not when updating from URL)
+  useEffect(() => {
+    if (isUpdatingFromUrl.current || isInitialMountUseCase.current) {
+      return;
+    }
+
+    const currentUseCases = filters.state.useCase || [];
+    const useCaseArray = Array.isArray(currentUseCases) ? currentUseCases : [];
+
+    if (useCaseArray.length === 0) {
+      // Remove useCase from URL if no use cases selected
+      if (searchParams.has('useCase')) {
+        const newParams = new URLSearchParams(searchParams);
+        newParams.delete('useCase');
+        isUpdatingFromUrl.current = true;
+        setSearchParams(newParams, { replace: true });
+      }
+    } else if (useCaseArray.length === 1 && useCaseArray[0] !== useCaseFromUrl) {
+      // Update URL if single useCase changed and not from URL
+      const newParams = new URLSearchParams(searchParams);
+      newParams.set('useCase', useCaseArray[0]);
+      isUpdatingFromUrl.current = true;
+      setSearchParams(newParams, { replace: true });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filters.state.useCase]);
+
   // Handle filter reset - also clear URL
   const handleResetFilters = useCallback(() => {
-    // Clear category from URL first
+    // Clear category and useCase from URL first
+    const newParams = new URLSearchParams(searchParams);
     if (searchParams.has('category')) {
-      const newParams = new URLSearchParams(searchParams);
       newParams.delete('category');
+    }
+    if (searchParams.has('useCase')) {
+      newParams.delete('useCase');
+    }
+    if (newParams.toString() !== searchParams.toString()) {
       setSearchParams(newParams, { replace: true });
     }
     // Then reset filters

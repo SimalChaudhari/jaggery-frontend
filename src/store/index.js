@@ -9,6 +9,7 @@ import courseReducer from './slices/courseSlice';
 import productReducer from './slices/productSlice';
 import useCaseReducer from './slices/useCaseSlice';
 import sizeReducer from './slices/sizeSlice';
+import addressReducer from './slices/addressSlice';
 
 export const store = configureStore({
   reducer: {
@@ -22,6 +23,7 @@ export const store = configureStore({
     products: productReducer,
     useCases: useCaseReducer,
     sizes: sizeReducer,
+    addresses: addressReducer,
   },
 });
 

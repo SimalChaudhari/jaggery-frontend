@@ -4,6 +4,8 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 
 import { paths } from 'src/routes/paths';
+import { orderService } from 'src/services/order.service';
+import { toast } from 'src/components/snackbar';
 
 import { ORDER_STATUS_OPTIONS } from 'src/_mock';
 import { DashboardContent } from 'src/layouts/dashboard';
@@ -18,14 +20,26 @@ import { OrderDetailsHistory } from '../order-details-history';
 export function OrderDetailsView({ order }) {
   const [status, setStatus] = useState(order?.status);
 
-  const handleChangeStatus = useCallback((newValue) => {
-    setStatus(newValue);
-  }, []);
+  const handleChangeStatus = useCallback(
+    async (newValue) => {
+      try {
+        await orderService.updateOrder(order?.id, {
+          orderStatus: newValue.charAt(0).toUpperCase() + newValue.slice(1),
+        });
+        setStatus(newValue);
+        toast.success('Order status updated successfully');
+      } catch (error) {
+        console.error('Error updating order status:', error);
+        toast.error('Failed to update order status');
+      }
+    },
+    [order?.id]
+  );
 
   return (
     <DashboardContent>
       <OrderDetailsToolbar
-        backLink={paths.dashboard.order.root}
+        backLink={paths.admin.order.root}
         orderNumber={order?.orderNumber}
         createdAt={order?.createdAt}
         status={status}

@@ -66,9 +66,9 @@ export function OrderDetailsItems({
       />
 
       <Scrollbar>
-        {items.map((item) => (
+        {items.map((item, index) => (
           <Stack
-            key={item.id}
+            key={item._id || item.id || item.product?._id || item.product?.id || `item-${index}`}
             direction="row"
             alignItems="center"
             sx={{
@@ -77,11 +77,11 @@ export function OrderDetailsItems({
               borderBottom: (theme) => `dashed 2px ${theme.vars.palette.background.neutral}`,
             }}
           >
-            <Avatar src={item.coverUrl} variant="rounded" sx={{ width: 48, height: 48, mr: 2 }} />
+            <Avatar src={item.image || item.coverUrl || item.cover} variant="rounded" sx={{ width: 48, height: 48, mr: 2 }} />
 
             <ListItemText
-              primary={item.name}
-              secondary={item.sku}
+              primary={item.name || item.title}
+              secondary={item.sku || item.product?.title}
               primaryTypographyProps={{ typography: 'body2' }}
               secondaryTypographyProps={{
                 component: 'span',

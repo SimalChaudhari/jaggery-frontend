@@ -41,7 +41,7 @@ export function AddressItem({ address, action, sx, ...other }) {
         </Typography>
 
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {address.phoneNumber}
+          {address.mobile}
         </Typography>
       </Stack>
 

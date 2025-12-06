@@ -126,68 +126,13 @@ export function ProfileView() {
                 </Box>
               </Grid>
 
-              {(user?.mobile || user?.phoneNumber) && (
+              {user?.mobile && (
                 <Grid xs={12} md={6}>
                   <Box>
                     <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      Phone Number
+                      Mobile Number
                     </Typography>
-                    <Typography variant="body1">{user?.mobile || user?.phoneNumber}</Typography>
-                  </Box>
-                </Grid>
-              )}
-
-              {user?.address && (
-                <Grid xs={12} md={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      Address
-                    </Typography>
-                    <Typography variant="body1">{user.address}</Typography>
-                  </Box>
-                </Grid>
-              )}
-
-              {user?.city && (
-                <Grid xs={12} md={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      City
-                    </Typography>
-                    <Typography variant="body1">{user.city}</Typography>
-                  </Box>
-                </Grid>
-              )}
-
-              {user?.state && (
-                <Grid xs={12} md={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      State
-                    </Typography>
-                    <Typography variant="body1">{user.state}</Typography>
-                  </Box>
-                </Grid>
-              )}
-
-              {user?.country && (
-                <Grid xs={12} md={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      Country
-                    </Typography>
-                    <Typography variant="body1">{user.country}</Typography>
-                  </Box>
-                </Grid>
-              )}
-
-              {user?.pincode && (
-                <Grid xs={12} md={6}>
-                  <Box>
-                    <Typography variant="body2" sx={{ color: 'text.secondary', mb: 0.5 }}>
-                      Pincode
-                    </Typography>
-                    <Typography variant="body1">{user.pincode}</Typography>
+                    <Typography variant="body1">{user.mobile}</Typography>
                   </Box>
                 </Grid>
               )}

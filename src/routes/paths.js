@@ -235,6 +235,11 @@ export const paths = {
       details: (id) => `${ROOTS.ADMIN}/size/${id}`,
       edit: (id) => `${ROOTS.ADMIN}/size/${id}/edit`,
     },
+    order: {
+      root: `${ROOTS.ADMIN}/order`,
+      list: `${ROOTS.ADMIN}/order/list`,
+      details: (id) => `${ROOTS.ADMIN}/order/${id}`,
+    },
     settings: `${ROOTS.ADMIN}/settings`,
   },
 };

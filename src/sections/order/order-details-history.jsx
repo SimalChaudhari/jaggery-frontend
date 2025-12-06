@@ -15,7 +15,11 @@ import { fDateTime } from 'src/utils/format-time';
 
 // ----------------------------------------------------------------------
 
-export function OrderDetailsHistory({ history }) {
+export function OrderDetailsHistory({ history = [] }) {
+  // Handle both array format and object with timeline format
+  const timeline = Array.isArray(history) ? history : history?.timeline || [];
+  const orderTime = Array.isArray(history) && history.length > 0 ? history[0]?.time : history?.orderTime;
+
   const renderSummary = (
     <Paper
       variant="outlined"
@@ -33,19 +37,19 @@ export function OrderDetailsHistory({ history }) {
     >
       <Stack spacing={0.5}>
         <Box sx={{ color: 'text.disabled' }}>Order time</Box>
-        {fDateTime(history?.orderTime)}
+        {fDateTime(orderTime)}
       </Stack>
       <Stack spacing={0.5}>
         <Box sx={{ color: 'text.disabled' }}>Payment time</Box>
-        {fDateTime(history?.orderTime)}
+        {fDateTime(orderTime)}
       </Stack>
       <Stack spacing={0.5}>
         <Box sx={{ color: 'text.disabled' }}>Delivery time for the carrier</Box>
-        {fDateTime(history?.orderTime)}
+        {fDateTime(orderTime)}
       </Stack>
       <Stack spacing={0.5}>
         <Box sx={{ color: 'text.disabled' }}>Completion time</Box>
-        {fDateTime(history?.orderTime)}
+        {fDateTime(orderTime)}
       </Stack>
     </Paper>
   );
@@ -54,10 +58,10 @@ export function OrderDetailsHistory({ history }) {
     <Timeline
       sx={{ p: 0, m: 0, [`& .${timelineItemClasses.root}:before`]: { flex: 0, padding: 0 } }}
     >
-      {history?.timeline.map((item, index) => {
+      {timeline.map((item, index) => {
         const firstTimeline = index === 0;
 
-        const lastTimeline = index === history.timeline.length - 1;
+        const lastTimeline = index === timeline.length - 1;
 
         return (
           <TimelineItem key={item.title}>

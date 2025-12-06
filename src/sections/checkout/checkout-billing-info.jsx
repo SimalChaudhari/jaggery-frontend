@@ -29,7 +29,7 @@ export function CheckoutBillingInfo({ billing, onBackStep }) {
 
         <Box sx={{ color: 'text.secondary', typography: 'body2' }}>{billing?.fullAddress}</Box>
 
-        <Box sx={{ color: 'text.secondary', typography: 'body2' }}>{billing?.phoneNumber}</Box>
+        <Box sx={{ color: 'text.secondary', typography: 'body2' }}>{billing?.mobile}</Box>
       </Stack>
     </Card>
   );

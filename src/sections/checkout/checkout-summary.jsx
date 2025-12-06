@@ -44,7 +44,7 @@ export function CheckoutSummary({ total, onEdit, discount, subtotal, shipping, o
           </Typography>
         </Box>
 
-        <Box display="flex">
+        {/* <Box display="flex">
           <Typography
             component="span"
             variant="body2"
@@ -55,7 +55,7 @@ export function CheckoutSummary({ total, onEdit, discount, subtotal, shipping, o
           <Typography component="span" variant="subtitle2">
             {discount ? fCurrency(-discount) : '-'}
           </Typography>
-        </Box>
+        </Box> */}
 
         <Box display="flex">
           <Typography
@@ -91,7 +91,7 @@ export function CheckoutSummary({ total, onEdit, discount, subtotal, shipping, o
           </Box>
         </Box>
 
-        {onApplyDiscount && (
+        {/* {onApplyDiscount && (
           <TextField
             fullWidth
             placeholder="Discount codes / Gifts"
@@ -106,7 +106,7 @@ export function CheckoutSummary({ total, onEdit, discount, subtotal, shipping, o
               ),
             }}
           />
-        )}
+        )} */}
       </Stack>
     </Card>
   );

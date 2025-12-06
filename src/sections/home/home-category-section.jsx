@@ -76,7 +76,7 @@ export function HomeCategorySection() {
           <Grid container spacing={{ xs: 3, md: 4 }}>
             {loading
               ? // Skeleton loader
-                [...Array(7)].map((_, index) => (
+                [...Array(6)].map((_, index) => (
                   <Grid key={`skeleton-${index}`} xs={6} sm={4} md={2}>
                     <Stack spacing={2} alignItems="center">
                       {/* Circular Image Skeleton */}

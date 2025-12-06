@@ -56,12 +56,7 @@ export function UserNewEditForm({ currentUser }) {
       firstname: currentUser?.firstname || '',
       lastname: currentUser?.lastname || '',
       email: currentUser?.email || '',
-      phoneNumber: currentUser?.phoneNumber || currentUser?.mobile || '',
-      address: currentUser?.address || '',
-      city: currentUser?.city || '',
-      state: currentUser?.state || '',
-      country: currentUser?.country || '',
-      zipCode: currentUser?.zipCode || currentUser?.pincode || '',
+      mobile: currentUser?.mobile || '',
       // role: currentUser?.role || 'User',
       // password: '',
     }),
@@ -103,13 +98,8 @@ export function UserNewEditForm({ currentUser }) {
         firstname: data.firstname,
         lastname: data.lastname,
         email: data.email,
-        mobile: data.phoneNumber || '',
-        address: data.address || '',
-        city: data.city || '',
-        state: data.state || '',
-        country: data.country || '',
-        pincode: data.zipCode || '',
-        status, // Backend expects lowercase: "active", "banned", etc.
+        mobile: data.mobile || '',
+        status, // Backend expects capitalized: "Active", "Inactive", etc.
       };
 
       if (currentUser) {
@@ -124,14 +114,7 @@ export function UserNewEditForm({ currentUser }) {
             ...currentLoggedInUser,
             name: `${backendData.firstname} ${backendData.lastname}`.trim() || backendData.username,
             email: backendData.email,
-            phoneNumber: backendData.mobile,
             mobile: backendData.mobile,
-            address: backendData.address,
-            city: backendData.city,
-            state: backendData.state,
-            country: backendData.country,
-            zipCode: backendData.pincode,
-            pincode: backendData.pincode,
             status: backendData.status,
             // Preserve other fields
             id: currentLoggedInUser.id,
@@ -339,14 +322,7 @@ export function UserNewEditForm({ currentUser }) {
               <Field.Text name="email" label="Email address" />
               <Field.Text name="firstname" label="First name" />
               <Field.Text name="lastname" label="Last name" />
-              <Field.Text name="phoneNumber" label="Phone Number" />
-
-              <Field.Text name="address" label="Address" multiline rows={2} sx={{ gridColumn: { xs: '1', sm: '1 / -1' } }} />
-
-              <Field.Text name="city" label="City" />
-              <Field.Text name="state" label="State" />
-              <Field.Text name="country" label="Country" />
-              <Field.Text name="zipCode" label="Zip Code / Pincode" />
+              <Field.Text name="mobile" label="Mobile Number" />
               {/* <Field.Text name="role" label="Role" /> */}
               {/* {!currentUser && (
                 <Field.Text name="password" label="Password" type="password" />
@@ -363,6 +339,7 @@ export function UserNewEditForm({ currentUser }) {
             </Stack>
           </Card>
         </Grid>
+
       </Grid>
     </Form>
   );

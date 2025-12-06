@@ -1,8 +1,12 @@
+import { useEffect } from 'react';
+import { useDispatch } from 'react-redux';
+
 import Box from '@mui/material/Box';
 import Card from '@mui/material/Card';
 import Grid from '@mui/material/Unstable_Grid2';
 import Typography from '@mui/material/Typography';
 import Button from '@mui/material/Button';
+import Stack from '@mui/material/Stack';
 
 import { paths } from 'src/routes/paths';
 import { RouterLink } from 'src/routes/components';
@@ -13,10 +17,21 @@ import { EmptyContent } from 'src/components/empty-content';
 import { LoadingScreen } from 'src/components/loading-screen';
 import { Iconify } from 'src/components/iconify';
 import { Label } from 'src/components/label';
+import { fetchAddresses } from 'src/store/slices/addressSlice';
+import { UserAddressManagement } from './user-address-management';
 
 // ----------------------------------------------------------------------
 
 export function UserDetailsView({ user, loading, error }) {
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (user?.id) {
+      // Fetch addresses for the specific user (admin can fetch any user's addresses)
+      dispatch(fetchAddresses(user.id));
+    }
+  }, [dispatch, user?.id]);
+
   if (loading) {
     return <LoadingScreen />;
   }
@@ -42,6 +57,7 @@ export function UserDetailsView({ user, loading, error }) {
       </DashboardContent>
     );
   }
+
 
   return (
     <DashboardContent>
@@ -92,19 +108,24 @@ export function UserDetailsView({ user, loading, error }) {
             </Typography>
 
             <Box sx={{ textAlign: 'left', mt: 3 }}>
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Username
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                {user.username || '-'}
-              </Typography>
-
-              <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                Role
-              </Typography>
-              <Typography variant="body2" sx={{ color: 'text.secondary', mb: 2 }}>
-                {user.role || '-'}
-              </Typography>
+              <Stack direction="row" spacing={3} justifyContent="space-between">
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Username
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {user.username || '-'}
+                  </Typography>
+                </Box>
+                <Box sx={{ flex: 1 }}>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Role
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {user.role || '-'}
+                  </Typography>
+                </Box>
+              </Stack>
             </Box>
           </Card>
         </Grid>
@@ -160,26 +181,23 @@ export function UserDetailsView({ user, loading, error }) {
                 </Typography>
               </Box>
 
-              <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Role
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {user.role || '-'}
-                </Typography>
-              </Box>
+              {user?.mobile && (
+                <Box>
+                  <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                    Mobile Number
+                  </Typography>
+                  <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                    {user.mobile}
+                  </Typography>
+                </Box>
+              )}
 
-              <Box>
-                <Typography variant="subtitle2" sx={{ mb: 1 }}>
-                  Status
-                </Typography>
-                <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-                  {user.status || '-'}
-                </Typography>
-              </Box>
             </Box>
           </Card>
         </Grid>
+
+        {/* Address Section */}
+        <UserAddressManagement userId={user.id} />
       </Grid>
     </DashboardContent>
   );

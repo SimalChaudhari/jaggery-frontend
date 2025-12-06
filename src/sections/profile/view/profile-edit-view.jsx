@@ -58,12 +58,7 @@ export function ProfileEditView() {
       lastname: user?.lastname || '',
       username: user?.username || '',
       email: user?.email || '',
-      mobile: user?.mobile || user?.phoneNumber || '',
-      address: user?.address || '',
-      city: user?.city || '',
-      state: user?.state || '',
-      country: user?.country || '',
-      pincode: user?.pincode || user?.zipCode || '',
+      mobile: user?.mobile || '',
     }),
     [user]
   );
@@ -91,12 +86,7 @@ export function ProfileEditView() {
         lastname: user.lastname || '',
         username: user.username || '',
         email: user.email || '',
-        mobile: user.mobile || user.phoneNumber || '',
-        address: user.address || '',
-        city: user.city || '',
-        state: user.state || '',
-        country: user.country || '',
-        pincode: user.pincode || user.zipCode || '',
+        mobile: user.mobile || '',
       });
     }
   }, [user, reset]);
@@ -150,20 +140,6 @@ export function ProfileEditView() {
                 <Field.Text name="username" label="Username" />
                 <Field.Text name="email" label="Email" type="email" />
                 <Field.Text name="mobile" label="Mobile Number" />
-
-                <Box>
-                  <Stack spacing={2}>
-                    <Field.Text name="address" label="Address" multiline rows={3} />
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                      <Field.Text name="city" label="City" />
-                      <Field.Text name="state" label="State" />
-                    </Stack>
-                    <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
-                      <Field.Text name="country" label="Country" />
-                      <Field.Text name="pincode" label="Pincode" />
-                    </Stack>
-                  </Stack>
-                </Box>
 
                 <Stack direction="row" spacing={2} justifyContent="flex-end">
                   <Button

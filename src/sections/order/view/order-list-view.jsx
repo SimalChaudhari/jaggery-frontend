@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 
 import Tab from '@mui/material/Tab';
 import Box from '@mui/material/Box';
@@ -20,7 +20,9 @@ import { fIsAfter, fIsBetween } from 'src/utils/format-time';
 
 import { varAlpha } from 'src/theme/styles';
 import { DashboardContent } from 'src/layouts/dashboard';
-import { _orders, ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { ORDER_STATUS_OPTIONS } from 'src/_mock';
+import { orderService } from 'src/services/order.service';
+import { LoadingScreen } from 'src/components/loading-screen';
 
 import { Label } from 'src/components/label';
 import { toast } from 'src/components/snackbar';
@@ -72,7 +74,8 @@ export function OrderListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(_orders);
+  const [tableData, setTableData] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   const filters = useSetState({
     name: '',
@@ -80,6 +83,45 @@ export function OrderListView() {
     startDate: null,
     endDate: null,
   });
+
+  // Fetch orders from API
+  useEffect(() => {
+    const fetchOrders = async () => {
+      try {
+        setLoading(true);
+        const response = await orderService.getAllOrders();
+        const orders = response?.orders || response || [];
+
+        // Transform backend order format to frontend format
+        const transformedOrders = orders.map((order) => ({
+          id: order._id || order.id,
+          orderNumber: order.orderNumber,
+          customer: {
+            name: order.shippingAddress?.name || 'N/A',
+            email: order.user?.email || order.user?.email || 'N/A',
+          },
+          createdAt: order.createdAt || new Date(),
+          totalQuantity: order.items?.reduce((sum, item) => sum + item.quantity, 0) || 0,
+          totalAmount: order.total || 0,
+          status: order.orderStatus?.toLowerCase() || 'pending',
+          items: order.items || [],
+          subtotal: order.subtotal || 0,
+          shipping: order.shipping || 0,
+          discount: order.discount || 0,
+          paymentStatus: order.paymentStatus,
+        }));
+
+        setTableData(transformedOrders);
+      } catch (error) {
+        console.error('Error fetching orders:', error);
+        toast.error('Failed to load orders');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchOrders();
+  }, []);
 
   const dateError = fIsAfter(filters.state.startDate, filters.state.endDate);
 
@@ -100,14 +142,17 @@ export function OrderListView() {
   const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
 
   const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-
-      toast.success('Delete success!');
-
-      setTableData(deleteRow);
-
-      table.onUpdatePageDeleteRow(dataInPage.length);
+    async (id) => {
+      try {
+        await orderService.deleteOrder(id);
+        const deleteRow = tableData.filter((row) => row.id !== id);
+        toast.success('Delete success!');
+        setTableData(deleteRow);
+        table.onUpdatePageDeleteRow(dataInPage.length);
+      } catch (error) {
+        console.error('Error deleting order:', error);
+        toast.error('Failed to delete order');
+      }
     },
     [dataInPage.length, table, tableData]
   );
@@ -127,7 +172,7 @@ export function OrderListView() {
 
   const handleViewRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.order.details(id));
+      router.push(paths.admin.order.details(id));
     },
     [router]
   );
@@ -140,14 +185,18 @@ export function OrderListView() {
     [filters, table]
   );
 
+  if (loading) {
+    return <LoadingScreen />;
+  }
+
   return (
     <>
       <DashboardContent>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Orders"
           links={[
-            { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Order', href: paths.dashboard.order.root },
+            { name: 'Dashboard', href: paths.admin.root },
+            { name: 'Order', href: paths.admin.order.root },
             { name: 'List' },
           ]}
           sx={{ mb: { xs: 3, md: 5 } }}

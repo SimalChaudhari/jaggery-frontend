@@ -15,7 +15,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import InputAdornment from '@mui/material/InputAdornment';
 
 import { paths } from 'src/routes/paths';
-import { useRouter } from 'src/routes/hooks';
+import { useRouter, useSearchParams } from 'src/routes/hooks';
 import { RouterLink } from 'src/routes/components';
 
 import { useBoolean } from 'src/hooks/use-boolean';
@@ -44,6 +44,7 @@ export const SignInSchema = zod.object({
 
 export function SimpleSignInView() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { checkUserSession } = useAuthContext();
   const [errorMsg, setErrorMsg] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
@@ -51,6 +52,9 @@ export function SimpleSignInView() {
   const [userEmail, setUserEmail] = useState('');
   const [showResendOption, setShowResendOption] = useState(false);
   const password = useBoolean();
+
+  // Get returnUrl from query params
+  const returnUrl = searchParams.get('returnUrl');
 
   const defaultValues = {
     email: 'admin@admin.in',
@@ -77,6 +81,14 @@ export function SimpleSignInView() {
         password: data.password
       });
       await checkUserSession?.();
+
+      // Addresses will be automatically fetched in AuthProvider's checkUserSession
+
+      // If returnUrl is provided, redirect to that URL
+      if (returnUrl) {
+        router.push(returnUrl);
+        return;
+      }
 
       // Redirect based on user role
       const userRole = user?.role || 'User';

@@ -103,6 +103,14 @@ export const navData = [
         ],
       },
       {
+        title: 'Order',
+        path: paths.admin.order.root,
+        icon: ICONS.order,
+        children: [
+          { title: 'List', path: paths.admin.order.list },
+        ],
+      },
+      {
         title: 'Use Case',
         path: paths.admin.useCase.root,
         icon: ICONS.category,

@@ -1,52 +1,36 @@
-import { z as zod } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { isValidPhoneNumber } from 'react-phone-number-input/input';
 
-import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import Dialog from '@mui/material/Dialog';
+import Divider from '@mui/material/Divider';
 import LoadingButton from '@mui/lab/LoadingButton';
 import DialogTitle from '@mui/material/DialogTitle';
 import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 
-import { Form, Field, schemaHelper } from 'src/components/hook-form';
+import { Form, Field } from 'src/components/hook-form';
+import { AddressSchema } from 'src/validations/address-validation-schema';
 
 // ----------------------------------------------------------------------
 
-export const NewAddressSchema = zod.object({
-  city: zod.string().min(1, { message: 'City is required!' }),
-  state: zod.string().min(1, { message: 'State is required!' }),
-  name: zod.string().min(1, { message: 'Name is required!' }),
-  address: zod.string().min(1, { message: 'Address is required!' }),
-  zipCode: zod.string().min(1, { message: 'Zip code is required!' }),
-  phoneNumber: schemaHelper.phoneNumber({ isValidPhoneNumber }),
-  country: schemaHelper.objectOrNull({
-    message: { required_error: 'Country is required!' },
-  }),
-  // Not required
-  primary: zod.boolean(),
-  addressType: zod.string(),
-});
-
 export function AddressNewForm({ open, onClose, onCreate }) {
   const defaultValues = {
-    name: '',
+    address: '',
     city: '',
     state: '',
-    address: '',
-    zipCode: '',
     country: '',
-    primary: true,
-    phoneNumber: '',
-    addressType: 'Home',
+    pincode: '',
+    label: 'Home',
+    isDefault: false,
   };
 
   const methods = useForm({
-    mode: 'all',
-    resolver: zodResolver(NewAddressSchema),
+    mode: 'onTouched',
+    reValidateMode: 'onBlur',
+    shouldFocusError: true,
+    resolver: zodResolver(AddressSchema),
     defaultValues,
   });
 
@@ -58,15 +42,17 @@ export function AddressNewForm({ open, onClose, onCreate }) {
   const onSubmit = handleSubmit(async (data) => {
     try {
       onCreate({
-        name: data.name,
-        phoneNumber: data.phoneNumber,
-        fullAddress: `${data.address}, ${data.city}, ${data.state}, ${data.country}, ${data.zipCode}`,
-        addressType: data.addressType,
-        primary: data.primary,
+        address: data.address,
+        city: data.city,
+        state: data.state,
+        country: data.country,
+        pincode: data.pincode,
+        label: data.label || 'Home',
+        isDefault: data.isDefault || false,
       });
       onClose();
     } catch (error) {
-      console.error(error);
+      // Error handling
     }
   });
 
@@ -74,62 +60,29 @@ export function AddressNewForm({ open, onClose, onCreate }) {
     <Dialog fullWidth maxWidth="sm" open={open} onClose={onClose}>
       <Form methods={methods} onSubmit={onSubmit}>
         <DialogTitle>New address</DialogTitle>
-
-        <DialogContent dividers>
-          <Stack spacing={3}>
+        <Divider />
+        <DialogContent>
+          <Stack spacing={2} sx={{ pt: 2 }}>
             <Field.RadioGroup
               row
-              name="addressType"
+              name="label"
               options={[
                 { label: 'Home', value: 'Home' },
                 { label: 'Office', value: 'Office' },
               ]}
             />
-
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
-              }}
-            >
-              <Field.Text name="name" label="Full name" />
-
-              <Field.Phone name="phoneNumber" label="Phone number" />
-            </Box>
-
-            <Field.Text name="address" label="Address" />
-
-            <Box
-              rowGap={3}
-              columnGap={2}
-              display="grid"
-              gridTemplateColumns={{
-                xs: 'repeat(1, 1fr)',
-                sm: 'repeat(3, 1fr)',
-              }}
-            >
-              <Field.Text name="city" label="Town/city" />
-
-              <Field.Text name="state" label="State" />
-
-              <Field.Text name="zipCode" label="Zip/code" />
-            </Box>
-
-            <Field.CountrySelect name="country" label="Country" placeholder="Choose a country" />
-
-            <Field.Checkbox name="primary" label="Use this address as default." />
+            <Field.Text name="address" label="Address" multiline rows={2} />
+            <Field.Text name="city" label="City" />
+            <Field.Text name="state" label="State" />
+            <Field.Text name="country" label="Country" />
+            <Field.Text name="pincode" label="Pincode" />
+            <Field.Checkbox name="isDefault" label="Set as default address" />
           </Stack>
         </DialogContent>
-
+        <Divider />
         <DialogActions>
-          <Button color="inherit" variant="outlined" onClick={onClose}>
-            Cancel
-          </Button>
-
-          <LoadingButton type="submit" variant="contained" loading={isSubmitting} color='primary'>
+          <Button onClick={onClose}>Cancel</Button>
+          <LoadingButton type="submit" variant="contained" color="primary" loading={isSubmitting}>
             Deliver to this address
           </LoadingButton>
         </DialogActions>
